@@ -34,3 +34,5 @@ def monte_carlo():
     print('Total area of mandelbrot =', pixelated_proportion * avg_pixel_value * total_area)
 
     plot_figure(result)
+
+# monte_carlo()
