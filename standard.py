@@ -10,7 +10,7 @@ def plot_figure(result):
     plt.ylabel('imaginary numbers')
     plt.show()
 
-def monte_carlo():
+def standard():
     # resolution
     rows, cols = 500, 500
 
@@ -34,3 +34,5 @@ def monte_carlo():
     print('Total area of mandelbrot =', pixelated_proportion * avg_pixel_value * total_area)
 
     plot_figure(result)
+
+standard()
