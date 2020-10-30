@@ -4,13 +4,9 @@ Created on Fri Oct 30 12:54:28 2020
 
 @author: djdcc_000
 """
-
 import numpy as np
-import matplotlib.pyplot as plt
 import lhsmdu
 from numba import jit
-
-# from numba import 
 
 # mandelbrot formula
 def mandelbrot(real_nr, imag_nr, max_iter):
@@ -22,41 +18,26 @@ def mandelbrot(real_nr, imag_nr, max_iter):
             return i
     return max_iter
 
-# resolution
-rows, cols = 1000, 1000
-
-
-result = np.zeros([rows, cols])
-
 r_min = -2
 r_max = 1
+r_tot = abs(r_min)+abs(r_max)
 i_min = -1 
 i_max = 1
+i_tot = abs(i_min)+abs(i_max)
 
-for real_index, Re in enumerate(np.linspace(r_min, r_max, num=rows )):
-    for imag_index, Im in enumerate(np.linspace(i_min, i_max, num=cols)):
-        result[real_index, imag_index] = mandelbrot(Re, Im, 20)
+N_sample = 20
 
-# result[500][500]
-
-plt.figure(dpi=200)
-plt.imshow(result.T, extent=[-2, 1, -1, 1])
-plt.xlabel('real numbers')
-plt.ylabel('imaginary numbers')
-plt.show()
+# l = lhsmdu.createRandomStandardUniformMatrix(2, 20) # Monte Carlo sampling
+k = np.array(lhsmdu.sample(2, N_sample)) # Latin Hypercube Sampling with multi-dimensional uniformity
 
 
-l = lhsmdu.createRandomStandardUniformMatrix(2, 20) # Monte Carlo sampling
-k = lhsmdu.sample(2, 20) # Latin Hypercube Sampling with multi-dimensional uniformity
+mb_list = []
 
-r_min = -2
-r_max = 1
-i_min = -1 
-i_max = 1
-
-Real = np.linspace(r_min, r_max, num=rows )
-Imag = np.linspace(i_min, i_max, num=cols)
-
-for sample in :
-    sample[]
-mandelbrot(Re, Im, 20)
+for sample in range(N_sample):
+    Re = k[0][sample]*r_tot + r_min
+    Im = k[1][sample]*i_tot + i_min
+    print(Re,Im)
+    # mb_fast = numba.jit("void(f4[:])")(mandelbrot(Re, Im, 20))
+    mb = mandelbrot(Re, Im, I)
+    mb_list.append(mb)
+print(mb_list)
