@@ -4,40 +4,48 @@ Created on Fri Oct 30 12:54:28 2020
 
 @author: djdcc_000
 """
-import numpy as np
-import lhsmdu
-from numba import jit
+# import numpy as np
+# import lhsmdu
+# from numba import jit
+import time
+from pyDOE import lhs
 
-# mandelbrot formula
-def mandelbrot(real_nr, imag_nr, max_iter):
-    c = complex(real_nr, imag_nr)
-    z = 0.0j # define z as complex nr
-    for i in range(max_iter):
-        z = z * z + c
-        if (z.real * z.real + z.imag * z.imag) >= 4:
-            return i
-    return max_iter
+from mandelbrot import mandelbrot
 
-r_min = -2
-r_max = 1
-r_tot = abs(r_min)+abs(r_max)
-i_min = -1 
-i_max = 1
-i_tot = abs(i_min)+abs(i_max)
+# @jit("void(i1[:])")
+# @jit(nopython=True)
+def latincube(maxI,N_sample):
+    r_min = -2.25
+    r_max = 0.75
+    r_tot = abs(r_min)+abs(r_max)
+    i_min = -1.5 
+    i_max = 1.5
+    i_tot = abs(i_min)+abs(i_max)
+    t0 = time.time()
+    k = lhs(2, samples = N_sample)
+    # k = np.array(lhsmdu.sample(2, N_sample)) # Latin Hypercube Sampling with multi-dimensional uniformity
+    t1 = time.time()
+    t = t1-t0
+    print("Sampletime:", t)
 
-N_sample = 20
+    mb_list = []
+    
+    for sample in range(N_sample):
+        Re = k[sample][0]*r_tot + r_min
+        Im = k[sample][1]*i_tot + i_min
+        # mb_fast = numba.jit("void(f4[:])")(mandelbrot(Re, Im, 20))
+        mb = mandelbrot(Re, Im, maxI)
+        mb_list.append(mb)
+    return mb_list
 
-# l = lhsmdu.createRandomStandardUniformMatrix(2, 20) # Monte Carlo sampling
-k = np.array(lhsmdu.sample(2, N_sample)) # Latin Hypercube Sampling with multi-dimensional uniformity
+I = 200
+S = 1000000
+t0 = time.time()
+sample = latincube(I,S)
+t1 = time.time()
+t = t1-t0
 
-
-mb_list = []
-
-for sample in range(N_sample):
-    Re = k[0][sample]*r_tot + r_min
-    Im = k[1][sample]*i_tot + i_min
-    print(Re,Im)
-    # mb_fast = numba.jit("void(f4[:])")(mandelbrot(Re, Im, 20))
-    mb = mandelbrot(Re, Im, I)
-    mb_list.append(mb)
-print(mb_list)
+hit = sample.count(I)
+print("Total time:", t)
+print("Percentage hits:",hit/S)
+print("Area mandelbrot:",(hit/S)*9)
