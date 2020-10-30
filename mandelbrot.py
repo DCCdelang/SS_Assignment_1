@@ -1,5 +1,3 @@
-import numpy as np
-
 # mandelbrot formula
 def mandelbrot(real_nr, imag_nr, max_iter):
     c = complex(real_nr, imag_nr)

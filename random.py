@@ -11,29 +11,28 @@ def plot_figure(result):
     plt.ylabel('imaginary numbers')
     plt.show()
 
-def random():
-    # resolution
-    sample_size = 10000
+def pure_random():
+    r_min = -2.25
+    r_max = .75
 
-    rows, cols = 1000, 1000
-
-
-    result = np.zeros([rows, cols])
-    iterations = 100
-    result = []
-    for i in range(sample_size):
-        real = np.random(0,rows)
-        imag = np.random(0, cols)
-        res = mandelbrot(real, imag, iterations)
-        result.append(res)
-
-    l = lhsmdu.createRandomStandardUniformMatrix(2, 20) # Monte Carlo sampling
-    for real_index, Re in enumerate(np.linspace(-2.25, .75, num=rows )):
-        for imag_index, Im in enumerate(np.linspace(-1.5, 1.5, num=cols)):
-            result[real_index, imag_index] = mandelbrot(Re, Im, iterations)
-
+    i_min = -1.5
+    i_max = 1.5
     
 
+
+    sample_size = 10000
+    iterations = 100
+
+    # rows, cols = 1000, 1000
+
+    mb_list = []
+    for i in range(sample_size):
+        Re = np.random.uniform(r_min, r_max, sample_size)
+        Im = np.random.uniform(i_min, i_max, sample_size)
+        print(Re,Im)
+        mb = mandelbrot(Re, Im, iterations)
+        mb_list.append(mb)
+    print(mb_list)
     # plot_figure(result)
 
-random()
+pure_random()
