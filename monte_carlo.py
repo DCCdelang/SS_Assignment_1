@@ -37,3 +37,5 @@ def monte_carlo():
     plot_figure(result)
 
 monte_carlo()
+
+# Use different fixed I value and experiment how S evaluates for this I
