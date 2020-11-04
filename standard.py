@@ -10,10 +10,9 @@ def plot_figure(result):
     plt.ylabel('imaginary numbers')
     plt.show()
 
-def monte_carlo():
+def standard():
     # resolution
-    rows, cols = 500, 500
-
+    rows, cols = 1000, 1000
 
     result = np.zeros([rows, cols])
     iterations = 100
@@ -35,4 +34,4 @@ def monte_carlo():
 
     plot_figure(result)
 
-# monte_carlo()
+standard()
