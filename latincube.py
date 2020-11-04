@@ -12,6 +12,8 @@ from pyDOE import lhs
 import matplotlib.pyplot as plt
 from mandelbrot import mandelbrot
 
+#%%
+# Latin Cube Function
 # @jit("void(i1[:])")
 # @jit(nopython=True)
 def latincube(maxI,N_sample):
@@ -27,7 +29,6 @@ def latincube(maxI,N_sample):
     t1 = time.time()
     t = t1-t0
     # print("Sampletime:", t)
-
     mb_list = []
     
     for sample in range(N_sample):
@@ -38,6 +39,8 @@ def latincube(maxI,N_sample):
         mb_list.append(mb)
     return mb_list
 
+#%%
+# Plotting points for different S on I
 area_list1 = []
 S_list = []
 
@@ -66,6 +69,8 @@ plt.plot(S_list,area_list1)
 plt.xscale("log")
 plt.show()
 
+#%%
+# Plotting I for different S
 area_list2 = []
 I_list = []
 for mult in range(1,16):
@@ -87,8 +92,68 @@ for mult in range(1,16):
 
 # print(I_list,area_list2)
 
-plt.title("Area vs iterations (I) - S=10^5")
+plt.title("Area vs iterations (I) - S^5")
 plt.xlabel("Max iterations")
 plt.ylabel("Area mandelbrot")
 plt.plot(I_list,area_list2)
+plt.show()
+# %%
+for exp in range(3,6):
+    area_list2 = []
+    I_list = []
+    for mult in range(1,16):
+        I = 20*mult
+        S = 10**exp
+
+        I_list.append(I)
+
+        t0 = time.time()
+        sample = latincube(I,S)
+        t1 = time.time()
+        t = t1-t0
+
+        hit = sample.count(I)
+        area_list2.append((hit/S)*9)
+        # print("Total time:", t)
+        # print("Percentage hits:",hit/S)
+        # print("Area mandelbrot:",(hit/S)*9)
+
+    # print(I_list,area_list2)
+
+    plt.title("Area vs iterations (I) for different S")
+    plt.xlabel("Max iterations")
+    plt.ylabel("Area mandelbrot")
+    plt.plot(I_list,area_list2, label  = "S=10^"+str(exp))
+plt.legend()
+plt.show()
+
+#%%
+
+for exp in range(3,6):
+    area_list2 = []
+    I_list = []
+    for mult in range(1,16):
+        I = 20*mult
+        S = 10**exp
+
+        I_list.append(I)
+
+        t0 = time.time()
+        sample = latincube(I,S)
+        t1 = time.time()
+        t = t1-t0
+
+        hit = sample.count(I)
+        area_list2.append((hit/S)*9)
+        # print("Total time:", t)
+        # print("Percentage hits:",hit/S)
+        # print("Area mandelbrot:",(hit/S)*9)
+
+    # print(I_list,area_list2)
+
+    plt.title("Area vs iterations (I) for different S")
+    plt.xlabel("Max iterations")
+    plt.ylabel("Area mandelbrot")
+    plt.plot(I_list,area_list2, label  = "S=10^"+str(exp))
+plt.legend()
 plt.show()
