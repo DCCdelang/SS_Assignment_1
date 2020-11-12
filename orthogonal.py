@@ -15,6 +15,10 @@ from mandelbrot import mandelbrot
 import random
 
 #%%
+# Predomantly based on the following stack overflow page 
+# CHECK IF THIS CAN BE DONE?????
+# See also post on canvas
+# https://codereview.stackexchange.com/questions/207610/orthogonal-sampling
 def orthogonal(maxI, ns):
     # assert np.sqrt(ns) % 1 == 0, "Please insert an even number of samples"
     n = int(np.sqrt(ns))

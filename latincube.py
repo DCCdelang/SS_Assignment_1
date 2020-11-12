@@ -11,6 +11,7 @@ import time
 from pyDOE import lhs
 import matplotlib.pyplot as plt
 from mandelbrot import mandelbrot
+import numpy as np
 
 #%%
 # Latin Cube Function
@@ -40,7 +41,7 @@ def latincube(maxI,N_sample):
     return mb_list
 
 #%%
-# Plotting points for different S on I
+# Plotting I for variable S
 area_list1 = []
 S_list = []
 
@@ -70,7 +71,7 @@ plt.xscale("log")
 plt.show()
 
 #%%
-# Plotting I for different S
+# Plotting S for variable I
 area_list2 = []
 I_list = []
 for mult in range(1,16):
@@ -100,70 +101,83 @@ plt.show()
 # %%
 # Plot for different Samplesize with respect to Iterations and Area
 
+fig, ax = plt.subplots()
+colour = [0,0,0,"b", "g", "r"]
 for exp in range(3,6):
     area_list2 = []
     I_list = []
+    N_samples = 3
+    ci = []
+    t0 = time.time()
+
     for mult in range(1,16):
         I = 20*mult
         S = 10**exp
-
         I_list.append(I)
+        samples = []
 
-        t0 = time.time()
-        sample = latincube(I,S)
-        t1 = time.time()
-        t = t1-t0
+        for _ in range(N_samples):
+            sample = latincube(I,S)
+            hit = sample.count(I)
+            samples.append((hit/S)*9)
+        ci.append(1.96 * np.std(samples)/np.mean(samples))
+        area_list2.append(np.mean(samples))
 
-        hit = sample.count(I)
-        area_list2.append((hit/S)*9)
-        # print("Total time:", t)
-        # print("Percentage hits:",hit/S)
-        # print("Area mandelbrot:",(hit/S)*9)
-
-    # print(I_list,area_list2)
+    t1 = time.time()
+    t = t1-t0
+    print("Total time:", t)
 
     plt.title("Area vs iterations (I) for different S")
     plt.xlabel("Max iterations")
     plt.ylabel("Area mandelbrot")
-    plt.plot(I_list,area_list2, label  = "S=10^"+str(exp))
+    ax.fill_between(I_list, (np.array(area_list2)-np.array(ci)), (np.array(area_list2)+np.array(ci)), color=colour[exp], alpha=.1)
+    plt.plot(I_list,area_list2,color=colour[exp], label  = "S=10^"+str(exp))
+
 plt.legend()
+plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
 plt.show()
 
 #%%
 # Plot Delta for different Samplesize with respect to Iterations and Area
 
+colour = [0,0,0,"b", "g", "r"]
+fig, ax = plt.subplots()
 for exp in range(3,6):
     area_list2 = [0]
     I_list = []
     delta_area = []
+    N_samples = 3
+    ci = []
+    t0 = time.time()
+
     for mult in range(1,16):
         I = 20*mult
         S = 10**exp
-
         I_list.append(I)
+        samples = []
 
-        t0 = time.time()
-        sample = latincube(I,S)
-        t1 = time.time()
-        t = t1-t0
+        for _ in range(N_samples):
+            sample = latincube(I,S)
+            hit = sample.count(I)
+            samples.append((hit/S)*9)
+        Area = np.mean(samples)
 
-        hit = sample.count(I)
-        Area = (hit/S)*9
-        # print(area_list2[mult-1], Area)
         Delta = Area - area_list2[mult-1]
         area_list2.append(Area)
         if mult > 1:
+            ci.append(1.96 * np.std(samples)/np.mean(samples))
             delta_area.append(Delta)
-        # print("Total time:", t)
-        # print("Percentage hits:",hit/S)
-        # print("Area mandelbrot:",(hit/S)*9)
 
-    # print(I_list,area_list2)
-
+    t1 = time.time()
+    t = t1-t0
+    print("Total time:", t)
 
     plt.title("Delta area vs iterations (I) for different S")
     plt.xlabel("Max iterations")
     plt.ylabel("Area mandelbrot")
-    plt.plot(I_list[1:],delta_area, label  = "S=10^"+str(exp))
+    plt.plot(I_list[1:],delta_area,color=colour[exp], label  = "S=10^"+str(exp))
+    ax.fill_between(I_list[1:], (np.array(delta_area)-np.array(ci)), (np.array(delta_area)+np.array(ci)), color=colour[exp], alpha=.1)
+
 plt.legend()
+plt.savefig("Figures/latincube_Delta_S_and_I.png", dpi = 300)
 plt.show()

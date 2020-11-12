@@ -10,7 +10,7 @@ def plot_figure(result,iterations):
     plt.title("Mandelbrot set with color scheme"+str(iterations))
     plt.xlabel('Real axis')
     plt.ylabel('Imaginary axis')
-    plt.savefig("Figures/Mandelbrot_visual_"+str(iterations)+"_iter.png")
+    # plt.savefig("Figures/Mandelbrot_visual_"+str(iterations)+"_iter.png")
     plt.show()
 
 def standard():
