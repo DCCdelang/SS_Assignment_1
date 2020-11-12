@@ -44,8 +44,9 @@ def pure_random(sample_size, iterations):
     return area_m
 
 
-sample_sizes = [10**2, 10**3, 10**4, 10**5]
-iterations = range(20, 300, 20)
+
+sample_sizes = [10**2, 10**3, 10**4, 10**5, 10**6]
+iterations = range(20, 400, 20)
 
 lines = []
 for sample_size in sample_sizes:
