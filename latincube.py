@@ -98,6 +98,8 @@ plt.ylabel("Area mandelbrot")
 plt.plot(I_list,area_list2)
 plt.show()
 # %%
+# Plot for different Samplesize with respect to Iterations and Area
+
 for exp in range(3,6):
     area_list2 = []
     I_list = []
@@ -128,10 +130,12 @@ plt.legend()
 plt.show()
 
 #%%
+# Plot Delta for different Samplesize with respect to Iterations and Area
 
 for exp in range(3,6):
-    area_list2 = []
+    area_list2 = [0]
     I_list = []
+    delta_area = []
     for mult in range(1,16):
         I = 20*mult
         S = 10**exp
@@ -144,16 +148,22 @@ for exp in range(3,6):
         t = t1-t0
 
         hit = sample.count(I)
-        area_list2.append((hit/S)*9)
+        Area = (hit/S)*9
+        # print(area_list2[mult-1], Area)
+        Delta = Area - area_list2[mult-1]
+        area_list2.append(Area)
+        if mult > 1:
+            delta_area.append(Delta)
         # print("Total time:", t)
         # print("Percentage hits:",hit/S)
         # print("Area mandelbrot:",(hit/S)*9)
 
     # print(I_list,area_list2)
 
-    plt.title("Area vs iterations (I) for different S")
+
+    plt.title("Delta area vs iterations (I) for different S")
     plt.xlabel("Max iterations")
     plt.ylabel("Area mandelbrot")
-    plt.plot(I_list,area_list2, label  = "S=10^"+str(exp))
+    plt.plot(I_list[1:],delta_area, label  = "S=10^"+str(exp))
 plt.legend()
 plt.show()

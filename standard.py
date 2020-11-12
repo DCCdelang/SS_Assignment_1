@@ -3,11 +3,14 @@ import matplotlib.pyplot as plt
 
 from mandelbrot import mandelbrot
 
-def plot_figure(result):
-    plt.figure(dpi=100)
-    plt.imshow(result.T, extent=[-2, 1, -1, 1])
-    plt.xlabel('real numbers')
-    plt.ylabel('imaginary numbers')
+def plot_figure(result,iterations):
+    plt.figure(figsize = (6,6), dpi=300) # For everything!
+    # plt.axis('scaled')
+    plt.imshow(result.T, extent=[-2, 1, -1, 1], aspect = 'auto')
+    plt.title("Mandelbrot set with color scheme"+str(iterations))
+    plt.xlabel('Real axis')
+    plt.ylabel('Imaginary axis')
+    plt.savefig("Figures/Mandelbrot_visual_"+str(iterations)+"_iter.png")
     plt.show()
 
 def standard():
@@ -15,7 +18,7 @@ def standard():
     rows, cols = 1000, 1000
 
     result = np.zeros([rows, cols])
-    iterations = 100
+    iterations = 20
     
     for real_index, Re in enumerate(np.linspace(-2.25, .75, num=rows )):
         for imag_index, Im in enumerate(np.linspace(-1.5, 1.5, num=cols)):
@@ -32,6 +35,6 @@ def standard():
 
     print('Total area of mandelbrot =', pixelated_proportion * avg_pixel_value * total_area)
 
-    plot_figure(result)
+    plot_figure(result,iterations)
 
 standard()
