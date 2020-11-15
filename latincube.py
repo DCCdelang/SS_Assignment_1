@@ -102,8 +102,8 @@ plt.show()
 # Plot for different Samplesize with respect to Iterations and Area
 
 fig, ax = plt.subplots()
-colour = [0,0,0,"b", "g", "r"]
-for exp in range(3,6):
+colour = [0,0,"k","b", "g", "r"]
+for exp in range(2,6):
     area_list2 = []
     I_list = []
     N_samples = 3
@@ -140,9 +140,9 @@ plt.show()
 #%%
 # Plot Delta for different Samplesize with respect to Iterations and Area
 
-colour = [0,0,0,"b", "g", "r"]
+colour = [0,0,"k","b", "g", "r"]
 fig, ax = plt.subplots()
-for exp in range(3,6):
+for exp in range(2,6):
     area_list2 = [0]
     I_list = []
     delta_area = []
@@ -150,7 +150,7 @@ for exp in range(3,6):
     ci = []
     t0 = time.time()
 
-    for mult in range(1,16):
+    for mult in range(1,21):
         I = 20*mult
         S = 10**exp
         I_list.append(I)
