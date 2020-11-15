@@ -44,21 +44,59 @@ def pure_random(sample_size, iterations):
     return area_m
 
 
+def single_plot():
+    '''
+    Shows calculated mandelbrot area for different sample sizes and amount of iterations
+    (in a single plot)
+    '''
+    sample_sizes = [10**2, 10**3, 10**4, 10**5]
+    iterations = range(20, 400, 20)
+    lines = []
+    for sample_size in sample_sizes:
+        line = []
+        for iteration in iterations:
+            result = pure_random(sample_size, iteration)
+            line.append(result)
 
-sample_sizes = [10**2, 10**3, 10**4, 10**5, 10**6]
-iterations = range(20, 400, 20)
-
-lines = []
-for sample_size in sample_sizes:
-    line = []
-    for iteration in iterations:
-        result = pure_random(sample_size, iteration)
-        line.append(result)
-    print(sample_size)
-    plt.plot(iterations, line, label=f"Sample size: {sample_size}")
-    lines.append(line)
+        ci = 1.96 * np.std(line)/np.mean(line)
+        error = round(np.std(line),3)
+        plt.plot(iterations, line, label=f"n = {sample_size} (error = {error})")
+        # plt.fill_between(iterations, (line-ci), (line+ci), alpha=.1)
+        lines.append(line)
 
 
-plt.legend()
-plt.show()
+    plt.legend()
+    plt.show()
 #%%
+
+def separate_plots():
+    '''
+    Shows calculated mandelbrot area for different sample sizes and amount of iterations
+    (in separate plots)
+    doesn't work yet!
+    '''
+    sample_sizes = [10**2, 10**3, 10**4, 10**5]
+    iterations = range(20, 400, 20)
+
+    lines = []
+    fig = plt.figure()
+
+    for i in range(len(sample_sizes)):
+        line = []
+        for iteration in iterations:
+            result = pure_random(sample_sizes[i], iteration)
+            line.append(result)
+
+        ci = 1.96 * np.std(line)/np.mean(line)
+        error = round(np.std(line),3)
+        ax[i] = fig.add_subplot()
+        ax[i].plot(iterations, line)
+        ax[i].set_title('f"n = {sample_size} (error = {error})"')
+        ax[i].fill_between(iterations, (line-ci), (line+ci), alpha=.1)
+        lines.append(line)
+
+
+    plt.legend()
+    plt.show()
+
+single_plot()
