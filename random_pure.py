@@ -23,7 +23,7 @@ def pure_random(sample_size, iterations):
     i_min, i_max = -1.5, 1.5
 
     # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
+    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max))
 
     # sample real and imaginary numbers from uniform distribution
     real_nrs = np.random.uniform(r_min, r_max, sample_size)
