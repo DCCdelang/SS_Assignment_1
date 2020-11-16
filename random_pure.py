@@ -181,7 +181,7 @@ def pure_random_antithetic_karim(sample_size, iterations):
 """ Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). Plotting all
 """
 def run_random_pure(algorithm, simulations, maxI, expS):
-    iterations = range(20, maxI, 20)
+    iterations = range(25, maxI+1, 25)
     fig, ax = plt.subplots()
     colour = [0,0,"k","b", "r", "g"]
     t0 = time.time()
@@ -213,7 +213,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
             line.append(np.mean(subresult))
 
         ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
+        plt.plot(iterations, line,color=colour[exp+1], label=f"Sample size: {sample_size}")
         lines.append(line)
         print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
 
@@ -227,5 +227,4 @@ def run_random_pure(algorithm, simulations, maxI, expS):
 run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 420, expS = 3)
 
 # pure_random_antithetic(sample_size = 10, iterations = 300)
-
 
