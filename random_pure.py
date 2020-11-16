@@ -13,8 +13,8 @@ from mandelbrot import mandelbrot
 from numpy.random import RandomState
 rs = RandomState(420)
 
-""" 
-Defining functions for three different approaches to pure random sampling 
+""" Defining functions for three different approaches to pure random sampling
+pure_random serves as a bases for all three.  
 """
 
 def pure_random(sample_size, iterations):
@@ -51,7 +51,9 @@ def pure_random_circle(sample_size, iterations):
     # define total area of real and imaginary numbers
     total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max))
 
-    Sub_area = total_area - 0.347 # Approach of deleted area
+    # Approach of area - deleted area 
+    # Math based on https://byjus.com/maths/area-segment-circle/
+    Sub_area = total_area - 0.347 
 
     # sample real and imaginary numbers from uniform distribution
     real_nrs = rs.uniform(r_min, r_max, sample_size)
@@ -181,7 +183,8 @@ def pure_random_antithetic_karim(sample_size, iterations):
     return area_m
 
 """ 
-Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). Plotting all
+Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). 
+Plotting all combinations of S and I
 """
 def run_random_pure(algorithm, simulations, maxI, expS):
     iterations = range(25, maxI+1, 25)
