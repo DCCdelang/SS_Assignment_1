@@ -111,16 +111,66 @@ def pure_random_antithetic(sample_size, iterations):
             Imp_imag.append(imag_nrs[i])
     sub_size = len(Imp_real)
     
-    print(Imp_real)
-    print(Imp_imag)
+    # print(len(Imp_real))
+    # print(Imp_imag)
 
-    plt.scatter(real_nrs,imag_nrs)
-    plt.show()
+    # plt.scatter(Imp_real,Imp_imag)
+    # plt.show()
     # create list to save mandelbrot iterations
     mb_list = []
     # iterate over entire sample
+    for i in range(sub_size):
+        mb = mandelbrot(Imp_real[i], Imp_imag[i], iterations)
+        mb_list.append(mb)
+    
+    # calculate area of the mandelbrot
+    hits = mb_list.count(iterations)
+    avg = hits/sub_size
+    area_m = avg*total_area
+
+    return area_m
+
+def pure_random_antithetic_karim(sample_size, iterations):
+    # define min and max real and imaginary numbers for mandelbrot function
+    r_min, r_max = -2, .5
+    i_min, i_max = -1.25, 1.25
+
+    # define total area of real and imaginary numbers
+    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
+
+    # sample real and imaginary numbers from uniform distribution
+    real_pos1 = rs.uniform(-2, 2, int(0.5*sample_size))
+    real_neg1 = [-x for x in real_pos1]
+    # real_pos2 = rs.uniform(0, -2, int(0.25*sample_size))
+    # real_neg2 = [-x for x in real_pos2]
+    real_nrs = [*real_pos1, *real_neg1,]
+
+    imag_pos1 = rs.uniform(i_min, i_max, int(0.5*sample_size))
+    imag_neg1 = [-x for x in imag_pos1]
+    # imag_pos2 = rs.uniform(0, i_min, int(0.25*sample_size))
+    # imag_neg2 = [-x for x in imag_pos2]
+    imag_nrs = [*imag_pos1, *imag_neg1]
+
+    # Fitting
+    Imp_real = []
+    Imp_imag = []
     for i in range(sample_size):
-        mb = mandelbrot(real_nrs[i], imag_nrs[i], iterations)
+        # if real_nrs[i]**2 + imag_nrs[i]**2 <= 4:
+        if real_nrs[i] > -2 and real_nrs[i] < .5:
+            Imp_real.append(real_nrs[i])
+            Imp_imag.append(imag_nrs[i])
+    sub_size = len(Imp_real)
+    
+    # print(len(Imp_real))
+    # print(Imp_imag)
+
+    # plt.scatter(Imp_real,Imp_imag)
+    # plt.show()
+    # create list to save mandelbrot iterations
+    mb_list = []
+    # iterate over entire sample
+    for i in range(sub_size):
+        mb = mandelbrot(Imp_real[i], Imp_imag[i], iterations)
         mb_list.append(mb)
     
     # calculate area of the mandelbrot
@@ -149,13 +199,15 @@ def run_random_pure(algorithm, simulations, maxI, expS):
 
         for iteration in iterations:
             subresult = []
-            for subsamp in range(simulations):
-                if algorithm == "CI":
+            for sim in range(simulations):
+                if algorithm == "Normal":
                     result = pure_random(sample_size, iteration)
-                elif algorithm == "CL":
+                elif algorithm == "Circle":
                     result = pure_random_circle(sample_size, iteration)
-                elif algorithm == "AN":
+                elif algorithm == "Antithetic":
                     result = pure_random_antithetic(sample_size, iteration)
+                elif algorithm == "Antithetic2":
+                    result = pure_random_antithetic_karim(sample_size, iteration)
 
                 subresult.append(result)
                 var_list.append(result)
@@ -178,9 +230,10 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     plt.show()
     
 
-run_random_pure(algorithm = "CI", simulations = 30, maxI = 400, expS = 6)
-# run_random_pure(algorithm = "CL", simulations = 4, maxI = 420, expS = 5)
-# run_random_pure(algorithm = "AN", simulations = 1, maxI = 60, expS = 3)
+
+# run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
+run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 420, expS = 3)
 
 
+# pure_random_antithetic(sample_size = 10, iterations = 300)
 
