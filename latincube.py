@@ -12,12 +12,12 @@ import statistics
 import scipy.stats as stats
 import time
 from mandelbrot import mandelbrot
+from pyDOE import lhs
 
 # Setting random seed
 from numpy.random import RandomState
 rs = RandomState(420)
 
-#%%
 # Latin Cube Function
 
 def latincube(sample_size, iterations):
@@ -41,100 +41,73 @@ def latincube(sample_size, iterations):
         mb = mandelbrot(Re, Im, iterations)
         mb_list.append(mb)
 
-    hits = mb_list.count(I)
+    hits = mb_list.count(iterations)
     avg = hits/sample_size
     area_m = avg*total_area
 
     return area_m
 
-# %%
 # Plot for different Samplesize with respect to Iterations and Area
 
-fig, ax = plt.subplots()
-colour = [0,0,"k","b", "g", "r"]
-N_samples = 3
-iterations = range(20, 420, 20)
-t0 = time.time()
-lines = []
+def run_latin_cube(delta, simulations, maxI, expS):
+    fig, ax = plt.subplots()
+    colour = [0,0,"k","b", "g", "r"]
+    iterations = range(20, maxI, 20)
+    print(iterations)
 
-for exp in range(2,4):
-    sample_size = 10**exp
-    line = []
-    I_list = []
-    var_list = []
-    ci = []
-
-    for iteration in iterations:
-        samples = []
-
-        for _ in range(N_samples):
-            result = latincube(sample_size,iteration)
-            samples.append(result)
-            var_list.append(result)
-
-        ci.append(1.96 * np.std(samples)/np.mean(samples))
-        line.append(np.mean(samples))
-
-    plt.title("Area vs iterations (I) for different S")
-    plt.xlabel("Max iterations")
-    plt.ylabel("Area mandelbrot")
-    # ax.fill_between(iterations, (np.array(area_list2)-np.array(ci)), (np.array(area_list2)+np.array(ci)), color=colour[exp], alpha=.1)
-    # plt.plot(I_list,area_list2,color=colour[exp], label  = "S=10^"+str(exp))
-
-    print(line)
-    ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-    plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
-    lines.append(line)
-    print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
-
-plt.legend()
-# plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
-plt.show()
-t1 = time.time()
-t = t1-t0
-print("Total time:", t)
-
-#%%
-# Plot Delta for different Samplesize with respect to Iterations and Area
-
-colour = [0,0,"k","b", "g", "r"]
-fig, ax = plt.subplots()
-for exp in range(2,6):
-    area_list2 = [0]
-    I_list = []
-    delta_area = []
-    N_samples = 3
-    ci = []
     t0 = time.time()
+    lines = []
 
-    for mult in range(1,21):
-        I = 20*mult
-        S = 10**exp
-        I_list.append(I)
-        samples = []
+    for exp in range(2,expS):
+        sample_size = 10**exp
+        line = []
+        iterations = []
+        var_list = []
+        ci = []
+        area_list= []
+        
+        for iteration in iterations:
+            samples = []
 
-        for _ in range(N_samples):
-            sample = latincube(I,S)
-            hit = sample.count(I)
-            samples.append((hit/S)*9)
-        Area = np.mean(samples)
+            if delta == False:
+                for _ in range(simulations):
+                    result = latincube(sample_size,iteration)
+                    samples.append(result)
+                    var_list.append(result)
 
-        Delta = Area - area_list2[mult-1]
-        area_list2.append(Area)
-        if mult > 1:
-            ci.append(1.96 * np.std(samples)/np.mean(samples))
-            delta_area.append(Delta)
+                ci.append(1.96 * np.std(samples)/np.mean(samples))
+                line.append(np.mean(samples))
 
+            elif delta == True:
+                for _ in range(simulations):
+                    sample = latincube(iterations,sample_size)
+                    hit = sample.count(iterations)
+                    samples.append((hit/sample_size)*9)
+                Area = np.mean(samples)
+
+                Delta = Area - area_list[-1]
+                area_list.append(Area)
+                if len(area_list) > 1:
+                    ci.append(1.96 * np.std(samples)/np.mean(samples))
+                    line.append(Delta)
+
+        plt.title("Area vs iterations (I) for different S")
+        plt.xlabel("Max iterations")
+        plt.ylabel("Area mandelbrot")
+        # ax.fill_between(iterations, (np.array(area_list2)-np.array(ci)), (np.array(area_list2)+np.array(ci)), color=colour[exp], alpha=.1)
+        # plt.plot(I_list,area_list2,color=colour[exp], label  = "S=10^"+str(exp))
+
+        print(line)
+        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
+        lines.append(line)
+        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
+
+    plt.legend()
+    # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
+    plt.show()
     t1 = time.time()
     t = t1-t0
     print("Total time:", t)
 
-    plt.title("Delta area vs iterations (I) for different S")
-    plt.xlabel("Max iterations")
-    plt.ylabel("Area mandelbrot")
-    plt.plot(I_list[1:],delta_area,color=colour[exp], label  = "S=10^"+str(exp))
-    ax.fill_between(I_list[1:], (np.array(delta_area)-np.array(ci)), (np.array(delta_area)+np.array(ci)), color=colour[exp], alpha=.1)
-
-plt.legend()
-plt.savefig("Figures/latincube_Delta_S_and_I.png", dpi = 300)
-plt.show()
+run_latin_cube(delta = True, simulations = 10, maxI = 420, expS = 3)
