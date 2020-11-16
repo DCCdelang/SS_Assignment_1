@@ -217,29 +217,34 @@ def run_random_pure(algorithm, simulations, maxI, expS):
             
             # calculate area and delta 
             area = np.mean(subresult)
-            delta = area - area_list[-1] if len(area_list) != 0 else 0
+            if len(area_list) != 0:
+                delta = area - area_list[-1] 
+                delta_line.append(delta)
 
             # save results for lines + confidence interval
             area_list.append(area)
             ci.append(1.96 * np.std(subresult)/area)
             line.append(np.mean(subresult))
-            delta_line.append(delta)
+            
 
         # add line area
         ax1.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        ax1.plot(iterations, line,color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax1.plot(iterations, line, color=colour[exp], label=f"Sample size: 10^{exp}")
         ax1.set(xlabel='Iterations', ylabel='Estimated area')
+        ax1.set_xlim(iterations[0], iterations[-1])
 
         # add line for delta
-        ax2.plot(iterations, delta_line,color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax2.plot(iterations[1:], delta_line, color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax2.axhline(0, color='black', linewidth=.5)
         ax2.set(xlabel = 'Iterations', ylabel = 'delta')
-
+        ax2.set_xlim(iterations[1], iterations[-1])
+        
         lines.append(line)
         delta_lines.append(delta_line)
 
         t1 = time.time()
         t = t1-t0
-    
+
         print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list), '\nElapsed time:', round(t1-t0,2))
 
 
@@ -252,7 +257,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     
 
 
-run_random_pure(algorithm = "Normal", simulations = 30, maxI = 300, expS = 5)
+run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 3)
 # run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 300, expS = 3)
 
 # pure_random_antithetic(sample_size = 10, iterations = 300)
