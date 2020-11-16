@@ -181,10 +181,12 @@ Plotting all combinations of S and I
 """
 def run_random_pure(algorithm, simulations, maxI, expS):
     iterations = range(25, maxI+1, 25)
-    fig, ax = plt.subplots()
-    colour = [0,0,"b", "r", "g", "k"]
+    fig, (ax1, ax2) = plt.subplots(2)
+    
+    colour = [0 , 0,"b", "r", "g", "k"]
     t0 = time.time()
     lines = []
+    delta_lines = []
 
     # First loop with exponents for 
     for exp in range(2,expS):
@@ -193,9 +195,14 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         var_list = []
         ci = []
 
+        area_list = []
+        delta_line = []
+
         for iteration in iterations:
+            
             subresult = []
-            for sim in range(simulations):
+            
+            for _ in range(simulations):
                 if algorithm == "Normal":
                     result = pure_random(sample_size, iteration)
                 elif algorithm == "Circle":
@@ -207,15 +214,28 @@ def run_random_pure(algorithm, simulations, maxI, expS):
 
                 subresult.append(result)
                 var_list.append(result)
+            
+            # calculate area and delta 
+            area = np.mean(subresult)
+            delta = area - area_list[-1] if len(area_list) != 0 else 0
 
-            ci.append(1.96 * np.std(subresult)/np.mean(subresult))
+            # save results for lines + confidence interval
+            area_list.append(area)
+            ci.append(1.96 * np.std(subresult)/area)
             line.append(np.mean(subresult))
+            delta_line.append(delta)
 
-        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: 10^{exp}")
-        plt.xlabel('Iterations')
-        plt.ylabel('Estimated area')
+        # add line area
+        ax1.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        ax1.plot(iterations, line,color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax1.set(xlabel='Iterations', ylabel='Estimated area')
+
+        # add line for delta
+        ax2.plot(iterations, delta_line,color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax2.set(xlabel = 'Iterations', ylabel = 'delta')
+
         lines.append(line)
+        delta_lines.append(delta_line)
 
         t1 = time.time()
         t = t1-t0
@@ -232,7 +252,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     
 
 
-run_random_pure(algorithm = "Normal", simulations = 100, maxI = 300, expS = 3)
+run_random_pure(algorithm = "Normal", simulations = 30, maxI = 300, expS = 5)
 # run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 300, expS = 3)
 
 # pure_random_antithetic(sample_size = 10, iterations = 300)
