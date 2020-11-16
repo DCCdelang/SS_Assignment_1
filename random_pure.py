@@ -13,7 +13,9 @@ from mandelbrot import mandelbrot
 from numpy.random import RandomState
 rs = RandomState(420)
 
-""" Defining functions for three different approaches to pure random sampling """
+""" 
+Defining functions for three different approaches to pure random sampling 
+"""
 
 def pure_random(sample_size, iterations):
     # define min and max real and imaginary numbers for mandelbrot function
@@ -128,12 +130,13 @@ def pure_random_antithetic(sample_size, iterations):
 
     return area_m
 
-""" Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). Plotting all
+""" 
+Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). Plotting all
 """
 def run_random_pure(algorithm, simulations, maxI, expS):
     iterations = range(25, maxI+1, 25)
     fig, ax = plt.subplots()
-    colour = [0,0,"k","b", "r", "g"]
+    colour = [0,0,"b", "r", "g", "k"]
     t0 = time.time()
     lines = []
 
@@ -161,17 +164,21 @@ def run_random_pure(algorithm, simulations, maxI, expS):
             line.append(np.mean(subresult))
 
         ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        plt.plot(iterations, line,color=colour[exp+1], label=f"Sample size: {sample_size}")
+        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: 10^{exp}")
+        plt.xlabel('Iterations')
+        plt.ylabel('Estimated area')
         lines.append(line)
         print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
 
-    plt.legend()
-    plt.show()
     t1 = time.time()
     t = t1-t0
-    print("Time is:", t)
+    print("The simulation took:", round(t,2), 'seconds')
 
-run_random_pure(algorithm = "CI", simulations = 10, maxI = 400, expS = 5)
+    plt.legend()
+    plt.show()
+    
+
+run_random_pure(algorithm = "CI", simulations = 30, maxI = 400, expS = 6)
 # run_random_pure(algorithm = "CL", simulations = 4, maxI = 420, expS = 5)
 # run_random_pure(algorithm = "AN", simulations = 1, maxI = 60, expS = 3)
 
