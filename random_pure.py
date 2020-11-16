@@ -220,20 +220,24 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         plt.xlabel('Iterations')
         plt.ylabel('Estimated area')
         lines.append(line)
-        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
+
+        t1 = time.time()
+        t = t1-t0
+    
+        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list), '\nElapsed time:', round(t1-t0,2))
+
 
     t1 = time.time()
     t = t1-t0
-    print("The simulation took:", round(t,2), 'seconds')
+    print("The simulation took:", round(t,3), 'seconds')
 
     plt.legend()
     plt.show()
     
 
 
-# run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
-run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 420, expS = 3)
-
+run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
+# run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 420, expS = 3)
 
 # pure_random_antithetic(sample_size = 10, iterations = 300)
 
