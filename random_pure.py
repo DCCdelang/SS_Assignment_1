@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import math
-
+import time
 import scipy.stats as stats
 # from scipy.stats import norm
 
@@ -49,20 +49,31 @@ def single_plot():
     Shows calculated mandelbrot area for different sample sizes and amount of iterations
     (in a single plot)
     '''
-    sample_sizes = [10**2, 10**3, 10**4, 10**5]
+    t0 = time.time()
+    sample_sizes = [10**2, 10**3, 10**4]
     iterations = range(20, 400, 20)
-    lines = []
+    experiments = 50
+    results, lines = [], []
+    
     for sample_size in sample_sizes:
         line = []
         for iteration in iterations:
-            result = pure_random(sample_size, iteration)
-            line.append(result)
+            # get mean for number of experiments
+            for x in range(experiments):
+                result = pure_random(sample_size, iteration)
+                results.append(result)
+            print(np.mean(results))
+            line.append(np.mean(result))
 
         ci = 1.96 * np.std(line)/np.mean(line)
         error = round(np.std(line),3)
         plt.plot(iterations, line, label=f"n = {sample_size} (error = {error})")
-        # plt.fill_between(iterations, (line-ci), (line+ci), alpha=.1)
+        plt.fill_between(iterations, (line-ci), (line+ci), alpha=.1)
         lines.append(line)
+
+        # calculate elapsed time
+        t1= time.time()
+        print('sample_size:', sample_size, f't: {round(t1-t0, 2)}')
 
 
     plt.legend()
