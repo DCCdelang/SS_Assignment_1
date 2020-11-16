@@ -3,11 +3,12 @@
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-import math
-import statistics
 import scipy.stats as stats
-# from scipy.stats import norm
+
+import math
 import time
+import statistics
+
 from mandelbrot import mandelbrot
 
 # Setting random seed
