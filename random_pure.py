@@ -1,5 +1,3 @@
-
-#%%
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
@@ -15,7 +13,6 @@ from mandelbrot import mandelbrot
 from numpy.random import RandomState
 rs = RandomState(420)
 
-#%%
 """ Defining functions for three different approaches to pure random sampling """
 
 def pure_random(sample_size, iterations):
@@ -90,14 +87,17 @@ def pure_random_antithetic(sample_size, iterations):
     total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
 
     # sample real and imaginary numbers from uniform distribution
-    real_uni = rs.uniform(0, 2, int(0.5*sample_size))
-    real_pos = real_uni
-    real_neg = [-x for x in real_uni]
-    real_nrs = [*real_pos, *real_neg]
+    real_pos1 = rs.uniform(-2, 2, int(0.5*sample_size))
+    real_neg1 = [-x for x in real_pos1]
+    # real_pos2 = rs.uniform(0, -2, int(0.25*sample_size))
+    # real_neg2 = [-x for x in real_pos2]
+    real_nrs = [*real_pos1, *real_neg1,]
 
-    imag_pos = rs.uniform(0, i_max, int(0.5*sample_size))
-    imag_neg = [-x for x in imag_pos]
-    imag_nrs = [*imag_pos, *imag_neg]
+    imag_pos1 = rs.uniform(i_min, i_max, int(0.5*sample_size))
+    imag_neg1 = [-x for x in imag_pos1]
+    # imag_pos2 = rs.uniform(0, i_min, int(0.25*sample_size))
+    # imag_neg2 = [-x for x in imag_pos2]
+    imag_nrs = [*imag_pos1, *imag_neg1]
 
     # Fitting
     Imp_real = []
@@ -109,6 +109,11 @@ def pure_random_antithetic(sample_size, iterations):
             Imp_imag.append(imag_nrs[i])
     sub_size = len(Imp_real)
     
+    print(Imp_real)
+    print(Imp_imag)
+
+    plt.scatter(real_nrs,imag_nrs)
+    plt.show()
     # create list to save mandelbrot iterations
     mb_list = []
     # iterate over entire sample
@@ -123,72 +128,50 @@ def pure_random_antithetic(sample_size, iterations):
 
     return area_m
 
-# pure_random_antithetic(1000,1000)
-#%%
-""" Code to run one sample per configuration combination of S and I.
-"""
-sample_sizes = [10**2,10**3,10**4,10**5]
-iterations = range(20, 420, 20)
-
-t0 = time.time()
-lines = []
-for sample_size in sample_sizes:
-    line = []
-    for iteration in iterations:
-        result = pure_random(sample_size, iteration)
-        line.append(result)
-    plt.plot(iterations, line, label=f"Sample size: {sample_size}")
-    lines.append(line)
-    print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(line))
-
-plt.legend()
-plt.show()
-t1 = time.time()
-t = t1-t0
-print("Time is:", t)
-
-# %%
 """ Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). Plotting all
 """
+def run_random_pure(algorithm, simulations, maxI, expS):
+    iterations = range(20, maxI, 20)
+    fig, ax = plt.subplots()
+    colour = [0,0,"k","b", "r", "g"]
+    t0 = time.time()
+    lines = []
 
-algorithm = "CL"
-conf_samples = 10
-iterations = range(20, 420, 20)
-fig, ax = plt.subplots()
-colour = [0,0,"k","b", "r", "g"]
-t0 = time.time()
-lines = []
+    # First loop with exponents for 
+    for exp in range(2,expS):
+        sample_size = 10**exp
+        line = []
+        var_list = []
+        ci = []
 
-# First loop with exponents for 
-for exp in range(2,5):
-    sample_size = 10**exp
-    line = []
-    var_list = []
-    ci = []
+        for iteration in iterations:
+            subresult = []
+            for subsamp in range(simulations):
+                if algorithm == "CI":
+                    result = pure_random(sample_size, iteration)
+                elif algorithm == "CL":
+                    result = pure_random_circle(sample_size, iteration)
+                elif algorithm == "AN":
+                    result = pure_random_antithetic(sample_size, iteration)
 
-    for iteration in iterations:
-        subresult = []
-        for subsamp in range(conf_samples):
-            if algorithm == "CI":
-                result = pure_random(sample_size, iteration)
-            elif algorithm == "CL":
-                result = pure_random_circle(sample_size, iteration)
-            elif algorithm == "AN":
-                result = pure_random_antithetic(sample_size, iteration)
+                subresult.append(result)
+                var_list.append(result)
 
-            subresult.append(result)
-            var_list.append(result)
+            ci.append(1.96 * np.std(subresult)/np.mean(subresult))
+            line.append(np.mean(subresult))
 
-        ci.append(1.96 * np.std(subresult)/np.mean(subresult))
-        line.append(np.mean(subresult))
+        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
+        lines.append(line)
+        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
 
-    ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-    plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
-    lines.append(line)
-    print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
+    plt.legend()
+    plt.show()
+    t1 = time.time()
+    t = t1-t0
+    print("Time is:", t)
 
-plt.legend()
-plt.show()
-t1 = time.time()
-t = t1-t0
-print("Time is:", t)
+# run_random_pure(algorithm = "CL", simulations = 4, maxI = 420, expS = 5)
+run_random_pure(algorithm = "AN", simulations = 1, maxI = 60, expS = 3)
+
+
