@@ -30,6 +30,7 @@ def latincube(sample_size, iterations):
     i_tot = abs(i_min) + abs(i_max)
     total_area = r_tot * i_tot
 
+    # print(sample_size)
     k = lhs(2, samples = sample_size)
 
     # Latin Hypercube Sampling with multi-dimensional uniformity
@@ -60,12 +61,12 @@ def run_latin_cube(delta, simulations, maxI, expS):
     for exp in range(2,expS):
         sample_size = 10**exp
         line = []
-        # iterations = []
         var_list = []
         ci = []
-        area_list= []
+        area_list= [0]
         
         for iteration in iterations:
+            # print(iteration)
             samples = []
 
             if delta == False:
@@ -78,10 +79,11 @@ def run_latin_cube(delta, simulations, maxI, expS):
                 line.append(np.mean(samples))
 
             elif delta == True:
-                for sim in range(simulations):
-                    sample = latincube(iterations,sample_size)
-                    hit = sample.count(iterations)
-                    samples.append((hit/sample_size)*9)
+
+                for _ in range(simulations):
+                    result = latincube(sample_size, iteration)
+                    samples.append(result)
+                    var_list.append(result)
                 Area = np.mean(samples)
 
                 Delta = Area - area_list[-1]
