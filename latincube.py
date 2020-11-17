@@ -51,7 +51,7 @@ def latincube(sample_size, iterations):
 # Plot for different Samplesize with respect to Iterations and Area
 
 def run_latin_cube(delta, simulations, maxI, expS):
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     colour = [0,0,"k","b", "g", "r"]
     iterations = range(20, maxI, 20)
 
@@ -70,7 +70,7 @@ def run_latin_cube(delta, simulations, maxI, expS):
             samples = []
 
             if delta == False:
-                for sim in range(simulations):
+                for _ in range(simulations):
                     result = latincube(sample_size,iteration)
                     samples.append(result)
                     var_list.append(result)
