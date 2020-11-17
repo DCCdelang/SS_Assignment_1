@@ -14,27 +14,26 @@ import time
 
 from mandelbrot import mandelbrot
 
-# Predomantly based on the following stack overflow page 
-# CHECK IF THIS CAN BE DONE?????
-# See also post on canvas
+# bounds of the undecided square
+R_MIN, R_MAX = -2, .5
+I_MIN, I_MAX = -1.25, 1.25
+TOTAL_AREA = (abs(R_MIN) + abs(R_MAX)) * (abs(I_MIN) + abs(I_MAX))
+
+
+# Predomantly based on the following stack overflow page:
 # https://codereview.stackexchange.com/questions/207610/orthogonal-sampling
 def orthogonal(sample_size, maxI):
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
-    r_tot = abs(r_min)+abs(r_max)
-    i_tot = abs(i_min)+abs(i_max)
+    r_tot = abs(R_MIN)+abs(R_MAX)
+    i_tot = abs(I_MIN)+abs(I_MAX)
 
-    # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max))
     # sample_size = int(sample_size/(sample_size*np.sqrt(sample_size)))
-    sample_size_adapt = np.sqrt(sample_size)*np.cbrt(np.sqrt(sample_size))
+    sample_size_adapt = np.sqrt(sample_size)*sample_size
 
     # assert np.sqrt(ns) % 1 == 0, "Please insert an even number of samples"
     n = int(np.sqrt(sample_size_adapt))
 
 
-    # Making a datastructure of a dict with coordinate tuples of a bigger 
-    # grid with subcoordinate of sub-grid points
+    # create datastructure with coordinate tuples of a bigger grid with subcoordinate of sub-grid points
     blocks = {(i,j):[(a,b) for a in range(n) for b in range(n)] for i in range(n) for j in range(n)}
     points = [] #np.empty((n,2))
     append = points.append # tips of python to fasten up append call
@@ -60,8 +59,8 @@ def orthogonal(sample_size, maxI):
     mb_list = []
     # print(points)
     for point in range(len(points)):
-        Re = points[point][0]*r_tot + r_min
-        Im = points[point][1]*i_tot + i_min
+        Re = points[point][0]*r_tot + R_MIN
+        Im = points[point][1]*i_tot + I_MIN
         # print(points[point], Re,Im)
         mb = mandelbrot(Re, Im, maxI)
         mb_list.append(mb)
@@ -77,9 +76,9 @@ def orthogonal(sample_size, maxI):
     hits = mb_list.count(maxI)
     avg = hits/len(points)
     print(avg)
-    print(total_area)
-    area_m = avg*total_area
-    print((hits/sample_size)*total_area)
+    print(TOTAL_AREA)
+    area_m = avg*TOTAL_AREA
+    print((hits/sample_size)*TOTAL_AREA)
     print("Area:", area_m)
 
     return area_m, len(points)

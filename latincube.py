@@ -18,16 +18,18 @@ from pyDOE import lhs
 from numpy.random import RandomState
 rs = RandomState(420)
 
-# Latin Cube Function
+# define min and max real and imaginary numbers for mandelbrot function
+R_MIN, R_MAX = -2, .5
+I_MIN, I_MAX = -1.25, 1.25
+
+# create extra space in plots for labels
+rcParams.update({'figure.autolayout': True})
 
 def latincube(sample_size, iterations):
-    # define min and max real and imaginary numbers for mandelbrot function
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
 
     # define total area of real and imaginary numbers
-    r_tot = abs(r_min) + abs(r_max)
-    i_tot = abs(i_min) + abs(i_max)
+    r_tot = abs(R_MIN) + abs(R_MAX)
+    i_tot = abs(I_MIN) + abs(I_MAX)
     total_area = r_tot * i_tot
 
     # print(sample_size)
@@ -37,8 +39,8 @@ def latincube(sample_size, iterations):
     mb_list = []
     
     for sample in range(sample_size):
-        Re = k[sample][0]*r_tot + r_min
-        Im = k[sample][1]*i_tot + i_min
+        Re = k[sample][0]*r_tot + R_MIN
+        Im = k[sample][1]*i_tot + I_MIN
         mb = mandelbrot(Re, Im, iterations)
         mb_list.append(mb)
 
@@ -51,7 +53,9 @@ def latincube(sample_size, iterations):
 # Plot for different Samplesize with respect to Iterations and Area
 
 def run_latin_cube(delta, simulations, maxI, expS):
-    _, ax = plt.subplots()
+    
+    fig, ax = plt.subplots(2, 1, sharex = True)
+
     colour = [0,0,"k","b", "g", "r"]
     iterations = range(20, maxI, 20)
 
@@ -92,23 +96,49 @@ def run_latin_cube(delta, simulations, maxI, expS):
                     ci.append(1.96 * np.std(samples)/np.mean(samples))
                     line.append(Delta)
 
-        plt.title("Area vs iterations (I) for different S")
-        plt.xlabel("Max iterations")
-        plt.ylabel("Area mandelbrot")
+
+        # create plot for area
+        ax[0].plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
+        ax[0].fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        ax[0].set(ylabel='Estimated area')
+        ax[0].set_xlim(iterations[0], iterations[-1])
+        ax[0].grid()
+        
+        # # create plot for delta
+        # ax[1].plot(iterations, delta_line, color=colour[exp], label=f"S: 10^{exp}")
+        # ax[1].fill_between(iterations, delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
+        # ax[1].axhline(0, color='black', linewidth=.5)
+        # ax[1].set(xlabel = 'Iterations', ylabel = 'delta')
+        # ax[1].set_xlim(iterations[1], iterations[-1])
+        # ax[1].grid()
+
+        ax[0].legend(loc='upper left', bbox_to_anchor=(1, 0.5))
+
         # ax.fill_between(iterations, (np.array(area_list2)-np.array(ci)), (np.array(area_list2)+np.array(ci)), color=colour[exp], alpha=.1)
         # plt.plot(I_list,area_list2,color=colour[exp], label  = "S=10^"+str(exp))
 
-        print(line)
-        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        plt.plot(iterations, line,color=colour[exp], label=f"Sample size: {sample_size}")
         lines.append(line)
-        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list))
 
-    plt.legend()
-    # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
-    plt.show()
+        t1 = time.time()
+        t = t1-t0
+        
+        area_approximation = round(line[-1],3)
+
+        print("\nAlgorithm:", algorithm,", Setting = I:", iteration, ",S:", sample_size,
+        "\nFinal approx:", area_approximation, 
+        "\nUpper bound:", round(area_approximation + ci[-1],3), 
+        "\nLower bound:", round(area_approximation - ci[-1],3),
+        "\nVariance:", round(statistics.variance(var_list),4), 
+        '\nElapsed time:', round(t1-t0, 2))
+
+
     t1 = time.time()
     t = t1-t0
-    print("Total time:", t)
+    print("\nThe simulation took:", round(t,3), 'seconds')
+
+    
+    plt.tight_layout()
+    # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
+    plt.show()
 
 run_latin_cube(delta = True, simulations = 10, maxI = 420, expS = 3)

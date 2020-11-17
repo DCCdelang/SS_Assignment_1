@@ -8,7 +8,7 @@ import statistics
 import time
 import random
 
-
+from matplotlib import rcParams
 from mandelbrot import mandelbrot
 
 # Setting random seed
@@ -18,16 +18,14 @@ R_MIN, R_MAX = -2, .5
 I_MIN, I_MAX = -1.25, 1.25
 TOTAL_AREA = (abs(R_MIN) + abs(R_MAX)) * (abs(I_MIN) + abs(I_MAX))
 
+# create extra space in plots for labels
+rcParams.update({'figure.autolayout': True})
 
 def pure_random(sample_size, iterations):
     '''
     Samples values from a uniform distribution 
     and calculates A_M based on the values.
     '''
-    # define min and max real and imaginary numbers for mandelbrot function
-    rs = RandomState(np.random.randint(0,10**7))
-    
-
     # sample real and imaginary numbers from uniform distribution
     real_nrs = rs.uniform(R_MIN, R_MAX, sample_size)
     imag_nrs = rs.uniform(I_MIN, I_MAX, sample_size)
@@ -48,7 +46,9 @@ def pure_random(sample_size, iterations):
 
 def pure_random_circle(sample_size, iterations):
     '''
-    
+    This function cuts off values in the top-left and bottom-left of the undecided square 
+    by estimating the complex nrs in a half circle half cube shaped area. 
+    This is done in a (failed) attempt to reduce the variance.
     '''
     # Approach of area - deleted area 
     # Math based on https://byjus.com/maths/area-segment-circle/
@@ -83,7 +83,8 @@ def pure_random_circle(sample_size, iterations):
 
 def pure_random_antithetic(sample_size, iterations):
     '''
-    Simulates antihetic values for .5 times the sample size
+    Simulates antihetic values for .5 times the sample size.
+    This method failed to reduce the variance.
     '''
     # define min and max for evenly spaced out square, to simulate anithetic samples
     MIN, MAX = -1.25, 1.25
@@ -114,10 +115,15 @@ def pure_random_antithetic(sample_size, iterations):
     return area_m
 
 def pure_random_stratified(sample_size, iterations):
+    '''
+    Pseudo-MC method; only samples random values for the imaginary numbers. 
+    Uses linspace R_MIN --> R_MAX spread over the sample size.
+    Reduces variance and therefore improves convergence of Ais --> Am
+    '''
     # get evenly spread out real nrs
     real_nrs = np.linspace(R_MIN, R_MAX, int(sample_size)).tolist()
     # randomly simulate imaginary nrs
-    imag_nrs = rs.uniform(-1.25, 1.25, int(sample_size))
+    imag_nrs = rs.uniform(I_MIN, I_MAX, int(sample_size))
     
     # create list to save mandelbrot iterations
     mb_list = []
@@ -142,9 +148,8 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     Possible algorithms to choose from are "Normal", "Circle", "Antithetic" and "Stratified"
     """
     iterations = range(25, maxI+1, 25)
-    fig1, ax1 = plt.subplots()
-    fig2, ax2 = plt.subplots()
-
+    fig,ax = plt.subplots(2, 1, sharex = True)
+    
     colour = [0 , 0,"b", "r", "g", "k"]
     t0 = time.time()
     lines = []
@@ -180,9 +185,8 @@ def run_random_pure(algorithm, simulations, maxI, expS):
             
             # calculate area and delta 
             area = np.mean(subresult)
-            if len(area_list) != 0:
-                delta = area - area_list[-1] 
-                delta_line.append(delta)
+            delta = area - area_list[-1] if len(area_list) != 0 else 0    
+            delta_line.append(delta)
 
             # save results for lines + confidence interval
             area_list.append(area)
@@ -191,21 +195,23 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         
         # calculate confidence interval for delta
         ci_delta = 1.96 * (np.std(delta_line))
-        print('ci_delta', ci_delta)
 
-        # add line area
-        ax1.plot(iterations, line, color=colour[exp], label=f"Sample size: 10^{exp}")
-        ax1.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        ax1.set(xlabel='Iterations', ylabel='Estimated area')
-        ax1.set_xlim(iterations[0], iterations[-1])
+        # create plot for area
+        ax[0].plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
+        ax[0].fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        ax[0].set(ylabel='Estimated area')
+        ax[0].set_xlim(iterations[0], iterations[-1])
+        ax[0].grid()
+        
+        # create plot for delta
+        ax[1].plot(iterations, delta_line, color=colour[exp], label=f"S: 10^{exp}")
+        ax[1].fill_between(iterations, delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
+        ax[1].axhline(0, color='black', linewidth=.5)
+        ax[1].set(xlabel = 'Iterations', ylabel = 'delta')
+        ax[1].set_xlim(iterations[1], iterations[-1])
+        ax[1].grid()
 
-        # add line for delta
-        ax2.plot(iterations[1:], delta_line, color=colour[exp], label=f"Sample size: 10^{exp}")
-        ax2.fill_between(iterations[1:], delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
-        # add line on x-axis
-        ax2.axhline(0, color='black', linewidth=.5)
-        ax2.set(xlabel = 'Iterations', ylabel = 'delta')
-        ax2.set_xlim(iterations[1], iterations[-1])
+        ax[0].legend(loc='upper left', bbox_to_anchor=(1, 0.5))
         
         lines.append(line)
         delta_lines.append(delta_line)
@@ -213,20 +219,24 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         t1 = time.time()
         t = t1-t0
         area_approximation = round(line[-1],3)
-        print("\nAlgorithm:", algorithm,", Setting = I:", iteration, ",S:", sample_size)
-        print("\nFinal approx:", area_approximation, "\nUpper bound:", area_approximation + ci[-1], "\nLower bound:", area_approximation - ci[-1],"\nVariance:", round(statistics.variance(var_list),4), '\nElapsed time:', round(t1-t0,2))
+        print("\nAlgorithm:", algorithm,", Setting = I:", iteration, ",S:", sample_size,
+        "\nFinal approx:", area_approximation, 
+        "\nUpper bound:", round(area_approximation + ci[-1],3), 
+        "\nLower bound:", round(area_approximation - ci[-1],3),
+        "\nVariance:", round(statistics.variance(var_list),4), 
+        '\nElapsed time:', round(t1-t0,2))
 
 
     t1 = time.time()
     t = t1-t0
-    print("The simulation took:", round(t,3), 'seconds')
+    print("\nThe simulation took:", round(t,3), 'seconds')
 
-    plt.legend()
+    
+    plt.tight_layout()
     plt.show()
+    
 
-
-
-# run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
-run_random_pure(algorithm = "Stratified", simulations = 300, maxI = 400, expS = 6)
+run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
+# run_random_pure(algorithm = "Stratified", simulations = 30, maxI = 400, expS = 6)
 
 
