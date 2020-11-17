@@ -11,8 +11,11 @@ import math
 import statistics
 import scipy.stats as stats
 import time
-from mandelbrot import mandelbrot
+
 from pyDOE import lhs
+
+from matplotlib import rcParams
+from mandelbrot import mandelbrot
 
 # Setting random seed
 from numpy.random import RandomState

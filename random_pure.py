@@ -148,7 +148,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     Possible algorithms to choose from are "Normal", "Circle", "Antithetic" and "Stratified"
     """
     iterations = range(25, maxI+1, 25)
-    fig,ax = plt.subplots(2, 1, sharex = True)
+    fig,ax = plt.subplots(sharex = True)
     
     colour = [0 , 0,"b", "r", "g", "k"]
     t0 = time.time()
@@ -197,21 +197,21 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         ci_delta = 1.96 * (np.std(delta_line))
 
         # create plot for area
-        ax[0].plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
-        ax[0].fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        ax[0].set(ylabel='Estimated area')
-        ax[0].set_xlim(iterations[0], iterations[-1])
-        ax[0].grid()
+        ax.plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
+        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        ax.set(ylabel='Estimated area')
+        ax.set_xlim(iterations[0], iterations[-1])
+        ax.grid()
         
-        # create plot for delta
-        ax[1].plot(iterations, delta_line, color=colour[exp], label=f"S: 10^{exp}")
-        ax[1].fill_between(iterations, delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
-        ax[1].axhline(0, color='black', linewidth=.5)
-        ax[1].set(xlabel = 'Iterations', ylabel = 'delta')
-        ax[1].set_xlim(iterations[1], iterations[-1])
-        ax[1].grid()
+        # # create plot for delta
+        # ax[1].plot(iterations, delta_line, color=colour[exp], label=f"S: 10^{exp}")
+        # ax[1].fill_between(iterations, delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
+        # ax[1].axhline(0, color='black', linewidth=.5)
+        # ax[1].set(xlabel = 'Iterations', ylabel = 'delta')
+        # ax[1].set_xlim(iterations[1], iterations[-1])
+        # ax[1].grid()
 
-        ax[0].legend(loc='upper left', bbox_to_anchor=(1, 0.5))
+        ax.legend(loc='best', bbox_to_anchor=(1, 0.5))
         
         lines.append(line)
         delta_lines.append(delta_line)
@@ -236,7 +236,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     plt.show()
     
 
-run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
-# run_random_pure(algorithm = "Stratified", simulations = 30, maxI = 400, expS = 6)
+# run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
+run_random_pure(algorithm = "Stratified", simulations = 30, maxI = 400, expS = 6)
 
 
