@@ -86,7 +86,7 @@ def orthogonal(sample_size, maxI):
 # orthogonal(100, 400)
 
 def run_orthogonal(simulations, maxI, expS):
-    _, ax = plt.subplots()
+    fig, ax = plt.subplots()
     colour = [0,0,"k","b", "g", "r"]
     iterations = range(25, maxI, 25)
 

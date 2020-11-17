@@ -60,7 +60,7 @@ def run_latin_cube(delta, simulations, maxI, expS):
     
     fig, ax = plt.subplots()
 
-    colour = [0,0,"k","b", "g", "r"]
+    colour = [0,0,"b", "g", "r", "k"]
     iterations = range(25, maxI, 25)
 
     t0 = time.time()
@@ -74,7 +74,6 @@ def run_latin_cube(delta, simulations, maxI, expS):
         area_list= [0]
         
         for iteration in iterations:
-            # print(iteration)
             samples = []
 
             if delta == False:
@@ -87,8 +86,7 @@ def run_latin_cube(delta, simulations, maxI, expS):
                 line.append(np.mean(samples))
 
             elif delta == True:
-
-                for _ in range(simulations):
+                for sim in range(simulations):
                     result = latincube(sample_size, iteration)
                     samples.append(result)
                     var_list.append(result)
