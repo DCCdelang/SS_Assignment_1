@@ -54,10 +54,10 @@ def latincube(sample_size, iterations):
 
 def run_latin_cube(delta, simulations, maxI, expS):
     
-    fig, ax = plt.subplots(2, 1, sharex = True)
+    fig, ax = plt.plot()
 
     colour = [0,0,"k","b", "g", "r"]
-    iterations = range(20, maxI, 20)
+    iterations = range(25, maxI, 25)
 
     t0 = time.time()
     lines = []
@@ -98,24 +98,13 @@ def run_latin_cube(delta, simulations, maxI, expS):
 
 
         # create plot for area
-        ax[0].plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
-        ax[0].fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
-        ax[0].set(ylabel='Estimated area')
-        ax[0].set_xlim(iterations[0], iterations[-1])
-        ax[0].grid()
+        ax.plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
+        ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
+        ax.set(ylabel='Estimated area')
+        ax.set_xlim(iterations[0], iterations[-1])
+        ax.grid()
         
-        # # create plot for delta
-        # ax[1].plot(iterations, delta_line, color=colour[exp], label=f"S: 10^{exp}")
-        # ax[1].fill_between(iterations, delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
-        # ax[1].axhline(0, color='black', linewidth=.5)
-        # ax[1].set(xlabel = 'Iterations', ylabel = 'delta')
-        # ax[1].set_xlim(iterations[1], iterations[-1])
-        # ax[1].grid()
-
-        ax[0].legend(loc='upper left', bbox_to_anchor=(1, 0.5))
-
-        # ax.fill_between(iterations, (np.array(area_list2)-np.array(ci)), (np.array(area_list2)+np.array(ci)), color=colour[exp], alpha=.1)
-        # plt.plot(I_list,area_list2,color=colour[exp], label  = "S=10^"+str(exp))
+        ax.legend(loc='upper left', bbox_to_anchor=(1, 0.5))
 
         lines.append(line)
 
@@ -141,4 +130,4 @@ def run_latin_cube(delta, simulations, maxI, expS):
     # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
     plt.show()
 
-run_latin_cube(delta = True, simulations = 10, maxI = 420, expS = 3)
+run_latin_cube(delta=False, simulations = 10, maxI = 420, expS = 3)
