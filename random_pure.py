@@ -145,20 +145,20 @@ def pure_random_antithetic_karim(sample_size, iterations):
     # define total area of real and imaginary numbers
     total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
 
-    # real_uni = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
-    # imag_uni = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
+    real_orig = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
+    imag_orig = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
 
-    # real_dup = [-x for x in real_uni]
-    # imag_dup = [-x for x in imag_uni]
+    real_copy = [-x for x in real_orig]
+    imag_copy = [-x for x in imag_orig]
 
-    # real_nrs = [*real_uni, *real_dup]
-    # imag_nrs = [*imag_uni, *imag_dup]
+    real_nrs = [*real_orig, *real_copy]
+    imag_nrs = [*imag_orig, *imag_copy]
 
-    # # shift nr .75 to the left, so we get the "undecided square"
-    # real_nrs = [x-.75 for x in real_nrs]
+    # shift nr .75 to the left, so we get the "undecided square"
+    real_nrs = [x-.75 for x in real_nrs]
 
-    real_nrs = np.linspace(r_min, r_max, int(sample_size)).tolist()
-    imag_nrs = rs.uniform(-1.25, 1.25, int(sample_size))
+    # real_nrs = np.linspace(r_min, r_max, int(sample_size)).tolist()
+    # imag_nrs = rs.uniform(-1.25, 1.25, int(sample_size))
     # random.shuffle(real_nrs)
     
     # create list to save mandelbrot iterations
@@ -245,7 +245,7 @@ def run_random_pure(algorithm, simulations, maxI, expS):
         t1 = time.time()
         t = t1-t0
 
-        print("\nSetting = I:", iteration, ",S:", sample_size, "\nFinal approx:", line[-1],"\nVariance:", statistics.variance(var_list), '\nElapsed time:', round(t1-t0,2))
+        print("\nAlgorithm=", algorithm,",Setting = I:", iteration, ",S:", sample_size, "\nFinal approx:", round(line[-1],3),"\nVariance:", round(statistics.variance(var_list),4), '\nElapsed time:', round(t1-t0,2))
 
 
     t1 = time.time()
@@ -257,8 +257,8 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     
 
 
-run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 3)
-# run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 300, expS = 3)
+run_random_pure(algorithm = "Normal", simulations = 30, maxI = 200, expS = 5)
+run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 200, expS = 5)
 
 # pure_random_antithetic(sample_size = 10, iterations = 300)
 
