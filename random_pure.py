@@ -14,23 +14,23 @@ from mandelbrot import mandelbrot
 # Setting random seed
 from numpy.random import RandomState
 rs = RandomState(420)
+R_MIN, R_MAX = -2, .5
+I_MIN, I_MAX = -1.25, 1.25
+TOTAL_AREA = (abs(R_MIN) + abs(R_MAX)) * (abs(I_MIN) + abs(I_MAX))
 
-""" Defining functions for three different approaches to pure random sampling
-pure_random serves as a bases for all three.  
-"""
 
 def pure_random(sample_size, iterations):
+    '''
+    Samples values from a uniform distribution 
+    and calculates A_M based on the values.
+    '''
     # define min and max real and imaginary numbers for mandelbrot function
     rs = RandomState(np.random.randint(0,10**7))
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
-
-    # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max))
+    
 
     # sample real and imaginary numbers from uniform distribution
-    real_nrs = rs.uniform(r_min, r_max, sample_size)
-    imag_nrs = rs.uniform(i_min, i_max, sample_size)
+    real_nrs = rs.uniform(R_MIN, R_MAX, sample_size)
+    imag_nrs = rs.uniform(I_MIN, I_MAX, sample_size)
 
     # create list to save mandelbrot iterations
     mb_list = []
@@ -42,25 +42,21 @@ def pure_random(sample_size, iterations):
     # calculate area of the mandelbrot
     hits = mb_list.count(iterations)
     avg = hits/sample_size
-    area_m = avg*total_area
+    area_m = avg*TOTAL_AREA
 
     return area_m
 
 def pure_random_circle(sample_size, iterations):
-    # define min and max real and imaginary numbers for mandelbrot function
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
-
-    # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max))
-
+    '''
+    
+    '''
     # Approach of area - deleted area 
     # Math based on https://byjus.com/maths/area-segment-circle/
-    Sub_area = total_area - 0.347 
+    Sub_area = TOTAL_AREA - 0.347 
 
     # sample real and imaginary numbers from uniform distribution
-    real_nrs = rs.uniform(r_min, r_max, sample_size)
-    imag_nrs = rs.uniform(i_min, i_max, sample_size)
+    real_nrs = rs.uniform(R_MIN, R_MAX, sample_size)
+    imag_nrs = rs.uniform(I_MIN, I_MAX, sample_size)
 
     # Importance sampling circle:
     Imp_real = []
@@ -86,67 +82,14 @@ def pure_random_circle(sample_size, iterations):
     return area_m
 
 def pure_random_antithetic(sample_size, iterations):
-    # define min and max real and imaginary numbers for mandelbrot function
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
+    '''
+    Simulates antihetic values for .5 times the sample size
+    '''
+    # define min and max for evenly spaced out square, to simulate anithetic samples
+    MIN, MAX = -1.25, 1.25
 
-    # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
-
-    # sample real and imaginary numbers from uniform distribution
-    real_pos1 = rs.uniform(-2, 2, int(0.5*sample_size))
-    real_neg1 = [-x for x in real_pos1]
-    # real_pos2 = rs.uniform(0, -2, int(0.25*sample_size))
-    # real_neg2 = [-x for x in real_pos2]
-    real_nrs = [*real_pos1, *real_neg1,]
-
-    imag_pos1 = rs.uniform(i_min, i_max, int(0.5*sample_size))
-    imag_neg1 = [-x for x in imag_pos1]
-    # imag_pos2 = rs.uniform(0, i_min, int(0.25*sample_size))
-    # imag_neg2 = [-x for x in imag_pos2]
-    imag_nrs = [*imag_pos1, *imag_neg1]
-
-    # Fitting
-    Imp_real = []
-    Imp_imag = []
-    for i in range(sample_size):
-        # if real_nrs[i]**2 + imag_nrs[i]**2 <= 4:
-        if real_nrs[i] > -2 and real_nrs[i] < .5:
-            Imp_real.append(real_nrs[i])
-            Imp_imag.append(imag_nrs[i])
-    sub_size = len(Imp_real)
-    
-    # print(len(Imp_real))
-    # print(Imp_imag)
-
-    # plt.scatter(Imp_real,Imp_imag)
-    # plt.show()
-    # create list to save mandelbrot iterations
-    mb_list = []
-    # iterate over entire sample
-    for i in range(sub_size):
-        mb = mandelbrot(Imp_real[i], Imp_imag[i], iterations)
-        mb_list.append(mb)
-    
-    # calculate area of the mandelbrot
-    hits = mb_list.count(iterations)
-    avg = hits/sub_size
-    area_m = avg*total_area
-
-    return area_m
-
-def pure_random_antithetic_karim(sample_size, iterations):
-
-
-    # define min and max real and imaginary numbers for mandelbrot function
-    r_min, r_max = -2, .5
-    i_min, i_max = -1.25, 1.25
-
-    # define total area of real and imaginary numbers
-    total_area = (abs(r_min) + abs(r_max)) * (abs(i_min) + abs(i_max) )
-
-    real_orig = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
-    imag_orig = rs.uniform(-1.25, 1.25, int(0.5*sample_size))
+    real_orig = rs.uniform(MIN, MAX, int(0.5*sample_size))
+    imag_orig = rs.uniform(MIN, MAX, int(0.5*sample_size))
 
     real_copy = [-x for x in real_orig]
     imag_copy = [-x for x in imag_orig]
@@ -157,11 +100,6 @@ def pure_random_antithetic_karim(sample_size, iterations):
     # shift nr .75 to the left, so we get the "undecided square"
     real_nrs = [x-.75 for x in real_nrs]
 
-    # real_nrs = np.linspace(r_min, r_max, int(sample_size)).tolist()
-    # imag_nrs = rs.uniform(-1.25, 1.25, int(sample_size))
-    # random.shuffle(real_nrs)
-    
-    # create list to save mandelbrot iterations
     mb_list = []
     # iterate over entire sample
     for i in range(sample_size):
@@ -171,18 +109,42 @@ def pure_random_antithetic_karim(sample_size, iterations):
     # calculate area of the mandelbrot
     hits = mb_list.count(iterations)
     avg = hits/sample_size
-    area_m = avg*total_area
+    area_m = avg*TOTAL_AREA
 
     return area_m
 
-""" 
-Possible algorithms to choose are Classic (CL), Circle (CI) or Antithetic (AN). 
-Plotting all combinations of S and I
-"""
-def run_random_pure(algorithm, simulations, maxI, expS):
-    iterations = range(25, maxI+1, 25)
-    fig, (ax1, ax2) = plt.subplots(2)
+def pure_random_stratified(sample_size, iterations):
+    # get evenly spread out real nrs
+    real_nrs = np.linspace(R_MIN, R_MAX, int(sample_size)).tolist()
+    # randomly simulate imaginary nrs
+    imag_nrs = rs.uniform(-1.25, 1.25, int(sample_size))
     
+    # create list to save mandelbrot iterations
+    mb_list = []
+
+    # iterate over entire sample
+    for i in range(sample_size):
+        mb = mandelbrot(real_nrs[i], imag_nrs[i], iterations)
+        mb_list.append(mb)
+    
+    # calculate area of the mandelbrot
+    hits = mb_list.count(iterations)
+    avg = hits/sample_size
+    area_m = avg*TOTAL_AREA
+
+    return area_m
+
+
+def run_random_pure(algorithm, simulations, maxI, expS):
+    """ 
+    Plots all combinations of s and i
+
+    Possible algorithms to choose from are "Normal", "Circle", "Antithetic" and "Stratified"
+    """
+    iterations = range(25, maxI+1, 25)
+    fig1, ax1 = plt.subplots()
+    fig2, ax2 = plt.subplots()
+
     colour = [0 , 0,"b", "r", "g", "k"]
     t0 = time.time()
     lines = []
@@ -209,11 +171,12 @@ def run_random_pure(algorithm, simulations, maxI, expS):
                     result = pure_random_circle(sample_size, iteration)
                 elif algorithm == "Antithetic":
                     result = pure_random_antithetic(sample_size, iteration)
-                elif algorithm == "Antithetic2":
-                    result = pure_random_antithetic_karim(sample_size, iteration)
+                elif algorithm == "Stratified":
+                    result = pure_random_stratified(sample_size, iteration)
 
                 subresult.append(result)
                 var_list.append(result)
+
             
             # calculate area and delta 
             area = np.mean(subresult)
@@ -225,16 +188,21 @@ def run_random_pure(algorithm, simulations, maxI, expS):
             area_list.append(area)
             ci.append(1.96 * np.std(subresult)/area)
             line.append(np.mean(subresult))
-            
+        
+        # calculate confidence interval for delta
+        ci_delta = 1.96 * (np.std(delta_line))
+        print('ci_delta', ci_delta)
 
         # add line area
-        ax1.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
         ax1.plot(iterations, line, color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax1.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
         ax1.set(xlabel='Iterations', ylabel='Estimated area')
         ax1.set_xlim(iterations[0], iterations[-1])
 
         # add line for delta
         ax2.plot(iterations[1:], delta_line, color=colour[exp], label=f"Sample size: 10^{exp}")
+        ax2.fill_between(iterations[1:], delta_line-ci_delta, delta_line+ci_delta, color=colour[exp], alpha=.1)
+        # add line on x-axis
         ax2.axhline(0, color='black', linewidth=.5)
         ax2.set(xlabel = 'Iterations', ylabel = 'delta')
         ax2.set_xlim(iterations[1], iterations[-1])
@@ -244,8 +212,9 @@ def run_random_pure(algorithm, simulations, maxI, expS):
 
         t1 = time.time()
         t = t1-t0
-
-        print("\nAlgorithm=", algorithm,",Setting = I:", iteration, ",S:", sample_size, "\nFinal approx:", round(line[-1],3),"\nVariance:", round(statistics.variance(var_list),4), '\nElapsed time:', round(t1-t0,2))
+        area_approximation = round(line[-1],3)
+        print("\nAlgorithm:", algorithm,", Setting = I:", iteration, ",S:", sample_size)
+        print("\nFinal approx:", area_approximation, "\nUpper bound:", area_approximation + ci[-1], "\nLower bound:", area_approximation - ci[-1],"\nVariance:", round(statistics.variance(var_list),4), '\nElapsed time:', round(t1-t0,2))
 
 
     t1 = time.time()
@@ -254,11 +223,10 @@ def run_random_pure(algorithm, simulations, maxI, expS):
 
     plt.legend()
     plt.show()
-    
 
 
-run_random_pure(algorithm = "Normal", simulations = 30, maxI = 200, expS = 5)
-run_random_pure(algorithm = "Antithetic2", simulations = 100, maxI = 200, expS = 5)
 
-# pure_random_antithetic(sample_size = 10, iterations = 300)
+# run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
+run_random_pure(algorithm = "Stratified", simulations = 300, maxI = 400, expS = 6)
+
 
