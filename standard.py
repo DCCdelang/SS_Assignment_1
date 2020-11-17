@@ -23,7 +23,7 @@ def standard():
     rows, cols = 1000, 1000
 
     result = np.zeros([rows, cols])
-    iterations = 100
+    iterations = 400
     hits = 0
 
     for real_index, Re in enumerate(np.linspace(left, right, num=rows )):
