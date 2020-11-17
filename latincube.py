@@ -13,6 +13,7 @@ import scipy.stats as stats
 import time
 from mandelbrot import mandelbrot
 from pyDOE import lhs
+from matplotlib import rcParams
 
 # Setting random seed
 from numpy.random import RandomState
@@ -54,7 +55,7 @@ def latincube(sample_size, iterations):
 
 def run_latin_cube(delta, simulations, maxI, expS):
     
-    fig, ax = plt.plot()
+    fig, ax = plt.subplots()
 
     colour = [0,0,"k","b", "g", "r"]
     iterations = range(25, maxI, 25)
@@ -113,11 +114,11 @@ def run_latin_cube(delta, simulations, maxI, expS):
         
         area_approximation = round(line[-1],3)
 
-        print("\nAlgorithm:", algorithm,", Setting = I:", iteration, ",S:", sample_size,
+        print("\nDelta:", delta,", Setting = I:", iteration, ",S:", sample_size,
         "\nFinal approx:", area_approximation, 
-        "\nUpper bound:", round(area_approximation + ci[-1],3), 
-        "\nLower bound:", round(area_approximation - ci[-1],3),
-        "\nVariance:", round(statistics.variance(var_list),4), 
+        "\nUpper bound:", area_approximation + ci[-1], 
+        "\nLower bound:", area_approximation - ci[-1],
+        "\nVariance:", statistics.variance(var_list), 
         '\nElapsed time:', round(t1-t0, 2))
 
 
@@ -130,4 +131,4 @@ def run_latin_cube(delta, simulations, maxI, expS):
     # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
     plt.show()
 
-run_latin_cube(delta=False, simulations = 10, maxI = 420, expS = 3)
+run_latin_cube(delta=False, simulations = 30, maxI = 420, expS = 6)
