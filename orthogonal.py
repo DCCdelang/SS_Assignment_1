@@ -5,14 +5,15 @@ Created on Fri Oct 30 12:54:28 2020
 @author: djdcc_000
 """
 #%%
-import numpy as np
-# import lhsmdu
-# from numba import jit
-import time
-from pyDOE import lhs
 import matplotlib.pyplot as plt
-from mandelbrot import mandelbrot
+import numpy as np
+from pyDOE import lhs
+
 import random
+import time
+
+from mandelbrot import mandelbrot
+
 
 #%%
 # Predomantly based on the following stack overflow page 
@@ -79,7 +80,7 @@ for exp in range(1,5):
 
     hit = sample.count(I)
     area_list1.append((hit/S)*9)
-    print("Total time:", t)
+    print("\nTotal time:", t)
     print("Percentage hits:",hit/S)
     print("Area mandelbrot:",(hit/S)*9)
 
