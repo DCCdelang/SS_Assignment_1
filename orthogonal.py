@@ -12,7 +12,9 @@ import statistics
 import random
 import time
 
+from matplotlib import rcParams
 from mandelbrot import mandelbrot
+rcParams.update({'figure.autolayout': True})
 
 # bounds of the undecided square
 R_MIN, R_MAX = -2, .5
@@ -33,7 +35,7 @@ def orthogonal(sample_size, maxI):
     blocks = {(i,j):[(a,b) for a in range(n) for b in range(n)] for i in range(n) for j in range(n)}
     points = [] #np.empty((n,2))
     append = points.append # tips of python to fasten up append call
-    print(len(blocks))
+    # print(len(blocks))
 
     for block in blocks:
         point = random.choice(blocks[block])
@@ -50,15 +52,20 @@ def orthogonal(sample_size, maxI):
             blocks[row] = [a for a in blocks[row] if a[0] != point[0]]
 
         #Adjust the points to fit the grid they fall in  
-        point = [(point[0] + n * block[0])/sample_size, (point[1] + n * block[1])/sample_size]
+        # point = [(point[0] + n * block[0])/sample_size, (point[1] + n * block[1])/sample_size]
+        x =  R_MIN + np.random.uniform((point[0] + n * block[0])/sample_size, (point[0] + n * block[0])/sample_size +1/sample_size ) * r_tot  # 4 is just max - min which is in my case 4
+        y =  I_MIN + np.random.uniform((point[1] + n * block[1])/sample_size, (point[1] + n * block[1])/sample_size + 1/sample_size ) * i_tot
+        point = [x,y]
+
         append(point)
-        # print(lst_row)
+    #     plt.scatter(point[0],point[1])    
+    # plt.show()
 
     mb_list = []
-    print(len(points))
+    # print(len(points))
     for point in range(len(points)):
-        Re = points[point][0]*r_tot + R_MIN
-        Im = points[point][1]*i_tot + I_MIN
+        Re = points[point][0]
+        Im = points[point][1]
         # print(points[point], Re,Im)
         mb = mandelbrot(Re, Im, maxI)
         mb_list.append(mb)
@@ -69,25 +76,26 @@ def orthogonal(sample_size, maxI):
     # print(TOTAL_AREA)
     area_m = avg*TOTAL_AREA
     # print((hits/sample_size)*TOTAL_AREA)
-    print("Area:", area_m)
+    # print("Area:", area_m)
 
     return area_m, len(points)
 
-t0 = time.time()
-orthogonal(100, 400)
-print(time.time()-t0)
+# t0 = time.time()
+# orthogonal(100, 100)
+# print(time.time()-t0)
 
 def run_orthogonal(simulations, maxI, expS):
     fig, ax = plt.subplots()
-
-    colour = [0,0,"k","b", "g", "r"]
+    colour = ["b","r", "g", "k"]
     iterations = range(25, maxI, 25)
-
+    samplesizes = range(10,expS,10)
     t0 = time.time()
     lines = []
+    exp = -1
 
-    for exp in range(2,expS):
-        sample_size = 10**exp
+    for factor in samplesizes:
+        exp += 1
+        sample_size = factor**2
         line = []
         var_list = []
         ci = []
@@ -105,17 +113,17 @@ def run_orthogonal(simulations, maxI, expS):
             line.append(np.mean(samples))
 
         # create plot for area
-        ax.plot(iterations, line, color=colour[exp], label=f"S: 10^{exp}", alpha = .8)
+        ax.plot(iterations, line, color=colour[exp], label=f"S: {factor**2}", alpha = .8)
         ax.fill_between(iterations, (np.array(line)-np.array(ci)), (np.array(line)+np.array(ci)), color=colour[exp], alpha=.1)
         ax.set(ylabel='Estimated area')
         ax.set_xlim(iterations[0], iterations[-1])
         ax.grid()
-        
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 0.5))
+        ax.legend(loc='best', bbox_to_anchor=(1, 0.5))
 
         lines.append(line)
 
         area_approximation = round(line[-1],3)
+        t1 = time.time()
 
         print("\nSetting = I:", iteration, ",S:", sample_size,
         "\nFinal approx:", area_approximation, 
@@ -125,6 +133,7 @@ def run_orthogonal(simulations, maxI, expS):
         '\nElapsed time:', round(t1-t0, 2))
 
     plt.legend()
+    plt.xlabel("Iterations")
     # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
     t1 = time.time()
     t = t1-t0
@@ -132,4 +141,4 @@ def run_orthogonal(simulations, maxI, expS):
     plt.show()
     
 
-# run_orthogonal(simulations = 30, maxI = 420, expS = 4)
+run_orthogonal(simulations = 5, maxI = 400, expS = 20)
