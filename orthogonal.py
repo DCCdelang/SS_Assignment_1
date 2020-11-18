@@ -78,13 +78,8 @@ orthogonal(100, 400)
 print(time.time()-t0)
 
 def run_orthogonal(simulations, maxI, expS):
-<<<<<<< HEAD
-    
     fig, ax = plt.subplots()
 
-=======
-    fig, ax = plt.subplots()
->>>>>>> 01e5d4d623dc2777f54bbacaf55dc75984df91e6
     colour = [0,0,"k","b", "g", "r"]
     iterations = range(25, maxI, 25)
 
