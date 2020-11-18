@@ -87,7 +87,7 @@ def orthogonal(sample_size, maxI):
 def run_orthogonal(simulations, maxI, expS):
     fig, ax = plt.subplots()
     colour = ["b","r", "g", "k"]
-    iterations = range(25, maxI, 25)
+    iterations = range(25, maxI+1, 25)
     samplesizes = range(10,expS,10)
     t0 = time.time()
     lines = []
@@ -132,7 +132,6 @@ def run_orthogonal(simulations, maxI, expS):
         "\nVariance:", statistics.variance(var_list), 
         '\nElapsed time:', round(t1-t0, 2))
 
-    plt.legend()
     plt.xlabel("Iterations")
     # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
     t1 = time.time()
@@ -141,4 +140,4 @@ def run_orthogonal(simulations, maxI, expS):
     plt.show()
     
 
-run_orthogonal(simulations = 5, maxI = 400, expS = 20)
+run_orthogonal(simulations = 30, maxI = 400, expS = 50)
