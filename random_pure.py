@@ -1,8 +1,11 @@
-import numpy as np
-import matplotlib.mlab as mlab
-import matplotlib.pyplot as plt
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 30 12:54:28 2020
 
-import math
+@author: Dante de Lang (11014083) & Karim Semin (11285990)
+"""
+import numpy as np
+import matplotlib.pyplot as plt
 import statistics
 import time
 
@@ -12,6 +15,8 @@ from mandelbrot import mandelbrot
 # Setting random seed
 from numpy.random import RandomState
 rs = RandomState(420)
+
+# Setting global variables
 R_MIN, R_MAX = -2, .5
 I_MIN, I_MAX = -1.25, 1.25
 TOTAL_AREA = (abs(R_MIN) + abs(R_MAX)) * (abs(I_MIN) + abs(I_MAX))
@@ -236,6 +241,4 @@ def run_random_pure(algorithm, simulations, maxI, expS):
     
 
 run_random_pure(algorithm = "Normal", simulations = 30, maxI = 400, expS = 6)
-# run_random_pure(algorithm = "Stratified", simulations = 30, maxI = 400, expS = 6)
-
 

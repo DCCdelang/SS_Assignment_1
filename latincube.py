@@ -2,19 +2,16 @@
 """
 Created on Fri Oct 30 12:54:28 2020
 
-@author: djdcc_000
+@author: Dante de Lang (11014083) & Karim Semin (11285990)
 """
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import math
 import statistics
-import scipy.stats as stats
 import time
 
 from pyDOE import lhs
-from matplotlib import rcParams
-
 from matplotlib import rcParams
 from mandelbrot import mandelbrot
 
@@ -30,7 +27,10 @@ I_MIN, I_MAX = -1.25, 1.25
 rcParams.update({'figure.autolayout': True})
 
 def latincube(sample_size, iterations):
-
+    """
+    LHS sampling function returning the area of M based on samples
+    provided by pyDOE lhs function
+    """
     # define total area of real and imaginary numbers
     r_tot = abs(R_MIN) + abs(R_MAX)
     i_tot = abs(I_MIN) + abs(I_MAX)
@@ -54,10 +54,11 @@ def latincube(sample_size, iterations):
 
     return area_m
 
-# Plot for different Samplesize with respect to Iterations and Area
-
 def run_latin_cube(delta, simulations, maxI, expS):
-    
+    """
+    Plot function used to create graphs for different S,I configurations
+    for the LHS sampling method.
+    """
     fig, ax = plt.subplots()
 
     colour = [0,0,"b", "g", "r", "k"]
@@ -122,14 +123,11 @@ def run_latin_cube(delta, simulations, maxI, expS):
         "\nVariance:", statistics.variance(var_list), 
         '\nElapsed time:', round(t1-t0, 2))
 
-
     t1 = time.time()
     t = t1-t0
     print("\nThe simulation took:", round(t,3), 'seconds')
-
     
     plt.tight_layout()
-    # plt.savefig("Figures/latincube_S_and_I.png",dpi = 300)
     plt.show()
 
 run_latin_cube(delta=False, simulations = 30, maxI = 420, expS = 6)

@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 30 12:54:28 2020
+
+@author: Dante de Lang (11014083) & Karim Semin (11285990)
+"""
+
 """ 
 This file contains the Mandelbrot formula as mathmatically known. 
 This function will be requested in other files in order to determine its area.
